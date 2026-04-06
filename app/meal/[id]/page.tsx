@@ -1,13 +1,24 @@
 import type { Metadata } from "next"
 import Image from "next/image"
-import Link from "next/link"
 import { notFound } from "next/navigation"
 
+import { Separator } from "@/components/ui/separator"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 import { getMealDetail, getRecipeItems } from "@/lib/api"
 
 type MealDetailPageProps = {
   params: Promise<{
     id: string
+  }>
+  searchParams: Promise<{
+    category?: string
   }>
 }
 
@@ -44,8 +55,10 @@ export async function generateMetadata({
   }
 }
 
-export default async function MealDetailPage({ params }: MealDetailPageProps) {
+export default async function MealDetailPage({ params, searchParams }: MealDetailPageProps) {
   const { id } = await params
+  const { category } = await searchParams
+  
   const meal = await getMealDetail(id)
 
   if (!meal) {
@@ -54,46 +67,72 @@ export default async function MealDetailPage({ params }: MealDetailPageProps) {
 
   const recipeItems = getRecipeItems(meal)
   const youtubeEmbedUrl = getYoutubeEmbedUrl(meal.strYoutube)
+  
+  const actualCategory = category ? decodeURIComponent(category) : meal.strCategory || "Category"
 
   return (
-    <main className="mx-auto w-full max-w-6xl space-y-6 px-4 py-8">
-      <Link
-        href="/ingredients"
-        className="inline-flex rounded-lg border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent"
-      >
-        Back to Ingredients
-      </Link>
+    <main className="mx-auto w-full max-w-5xl space-y-8 px-4 py-8">
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/ingredients">Foods</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href={`/ingredients/${encodeURIComponent(actualCategory)}`}>{actualCategory}</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{meal.strMeal}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
-      <section className="grid gap-6 lg:grid-cols-2">
+      <div className="space-y-4">
+        <h1 className="text-4xl font-bold text-[#1D2B4F] md:text-5xl">
+          {meal.strMeal}
+        </h1>
+        <Separator className="mt-4" />
+      </div>
+
+      {meal.strArea && (
+        <div className="text-sm font-bold text-[#e15b64] mb-2 tracking-wide">
+          {meal.strArea} Culinary
+        </div>
+      )}
+
+      <section className="grid gap-12 lg:grid-cols-2">
         <div className="space-y-4">
-          <Image
-            src={meal.strMealThumb}
-            alt={meal.strMeal}
-            width={800}
-            height={600}
-            className="h-auto w-full rounded-xl border object-cover"
-            priority
-          />
+          <div className="overflow-hidden rounded-3xl shadow-sm border">
+            <Image
+              src={meal.strMealThumb}
+              alt={meal.strMeal}
+              width={800}
+              height={800}
+              className="h-auto w-full object-cover aspect-square"
+              priority
+            />
+          </div>
         </div>
 
-        <div className="space-y-6">
-          <header className="space-y-2">
-            <h1 className="text-2xl font-bold md:text-3xl">{meal.strMeal}</h1>
-            <p className="text-sm text-muted-foreground md:text-base">
-              Recipe details, tutorial, and ingredient measurements.
-            </p>
-          </header>
+        <div className="space-y-10">
+          <section className="space-y-4">
+            <h2 className="text-3xl font-normal text-[#1D2B4F]">Instructions</h2>
+            <div className="leading-relaxed whitespace-pre-line text-sm text-foreground/80 font-serif">
+              {meal.strInstructions}
+            </div>
+          </section>
 
-          <section className="space-y-2">
-            <h2 className="text-lg font-semibold">Recipe</h2>
-            <ul className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
+          <section className="space-y-4">
+            <h2 className="text-3xl font-normal text-[#1D2B4F]">Recipes</h2>
+            <ul className="list-disc pl-5 space-y-1 text-sm text-foreground/80 font-serif">
               {recipeItems.map((item) => (
-                <li
-                  key={`${item.ingredient}-${item.measure}`}
-                  className="rounded-md border p-2"
-                >
-                  <span className="font-medium">{item.ingredient}</span>:{" "}
-                  {item.measure}
+                <li key={`${item.ingredient}-${item.measure}`}>
+                  {item.measure} {item.ingredient}
                 </li>
               ))}
             </ul>
@@ -101,17 +140,10 @@ export default async function MealDetailPage({ params }: MealDetailPageProps) {
         </div>
       </section>
 
-      <section className="space-y-2">
-        <h2 className="text-lg font-semibold">Tutorial / Instructions</h2>
-        <p className="leading-relaxed whitespace-pre-line text-muted-foreground">
-          {meal.strInstructions}
-        </p>
-      </section>
-
-      {youtubeEmbedUrl ? (
-        <section className="space-y-2">
-          <h2 className="text-lg font-semibold">Youtube Embedded</h2>
-          <div className="aspect-video overflow-hidden rounded-xl border">
+      {youtubeEmbedUrl && (
+        <section className="space-y-6 pt-12 text-center max-w-4xl mx-auto">
+          <h2 className="text-3xl font-normal text-[#1D2B4F]">Tutorials</h2>
+          <div className="aspect-video overflow-hidden rounded-2xl shadow-md border bg-muted">
             <iframe
               src={youtubeEmbedUrl}
               title={`Youtube tutorial for ${meal.strMeal}`}
@@ -121,7 +153,7 @@ export default async function MealDetailPage({ params }: MealDetailPageProps) {
             />
           </div>
         </section>
-      ) : null}
+      )}
     </main>
   )
 }
