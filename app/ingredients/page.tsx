@@ -22,7 +22,7 @@ export default async function IngredientsPage() {
         <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">
           mealapp API website
         </p>
-        <h1 className="text-4xl font-bold text-[#1D2B4F] md:text-5xl lg:text-6xl text-balance">
+        <h1 className="text-4xl font-bold text-[#1D2B4F] dark:text-white md:text-5xl lg:text-6xl text-balance">
           See All The Delicious Foods
         </h1>
       </header>

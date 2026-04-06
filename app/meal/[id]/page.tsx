@@ -93,7 +93,7 @@ export default async function MealDetailPage({ params, searchParams }: MealDetai
       </Breadcrumb>
 
       <div className="space-y-4">
-        <h1 className="text-4xl font-bold text-[#1D2B4F] md:text-5xl">
+        <h1 className="text-4xl font-bold text-[#1D2B4F] dark:text-white md:text-5xl">
           {meal.strMeal}
         </h1>
         <Separator className="mt-4" />
@@ -121,14 +121,14 @@ export default async function MealDetailPage({ params, searchParams }: MealDetai
 
         <div className="space-y-10">
           <section className="space-y-4">
-            <h2 className="text-3xl font-normal text-[#1D2B4F]">Instructions</h2>
+            <h2 className="text-3xl font-normal text-[#1D2B4F] dark:text-white">Instructions</h2>
             <div className="leading-relaxed whitespace-pre-line text-sm text-foreground/80 font-serif">
               {meal.strInstructions}
             </div>
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-3xl font-normal text-[#1D2B4F]">Recipes</h2>
+            <h2 className="text-3xl font-normal text-[#1D2B4F] dark:text-white">Recipes</h2>
             <ul className="list-disc pl-5 space-y-1 text-sm text-foreground/80 font-serif">
               {recipeItems.map((item) => (
                 <li key={`${item.ingredient}-${item.measure}`}>
@@ -142,7 +142,7 @@ export default async function MealDetailPage({ params, searchParams }: MealDetai
 
       {youtubeEmbedUrl && (
         <section className="space-y-6 pt-12 text-center max-w-4xl mx-auto">
-          <h2 className="text-3xl font-normal text-[#1D2B4F]">Tutorials</h2>
+          <h2 className="text-3xl font-normal text-[#1D2B4F] dark:text-white">Tutorials</h2>
           <div className="aspect-video overflow-hidden rounded-2xl shadow-md border bg-muted">
             <iframe
               src={youtubeEmbedUrl}

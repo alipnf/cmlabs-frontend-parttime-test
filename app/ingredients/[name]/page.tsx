@@ -56,7 +56,7 @@ export default async function IngredientDetailPage({
       </Breadcrumb>
 
       <div className="space-y-4">
-        <h1 className="text-4xl font-bold text-[#1D2B4F] md:text-5xl">
+        <h1 className="text-4xl font-bold text-[#1D2B4F] dark:text-white md:text-5xl">
           {ingredientName} Meals
         </h1>
         <Separator className="mt-4" />
